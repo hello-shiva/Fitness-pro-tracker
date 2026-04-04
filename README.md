@@ -1,151 +1,171 @@
-🏋️‍♂️ FITNESS-TRACKER-PRO
-A complete Full-Stack (MERN) application to track your fitness journey, log workouts, and get advice from an AI-powered fitness assistant. This project was built to provide a seamless experience for users to manage their health and fitness goals.
+# 🏋️‍♂️ FITNESS-TRACKER-PRO
 
-🌟 Features
-User Authentication: Secure sign-up and login using JWT (JSON Web Tokens) with password hashing via bcrypt.
+A **comprehensive MERN Stack Fitness Management System with AI Integration** designed to help users track workouts, monitor progress, and receive intelligent fitness guidance.
 
-Workout Management: Create, read, update, and delete workout logs (CRUD operations).
+---
 
-AI Fitness Assistant: Integrated chatbot to answer fitness, workout, and nutrition-related questions.
+## 🌟 Overview
 
-Secure API: Protected routes using custom authentication middleware.
+**FITNESS-TRACKER-PRO** is a high-performance full-stack web application that enables users to manage their fitness journey efficiently. From logging workouts to interacting with an AI-powered assistant, the platform delivers a modern and scalable experience.
 
-Clean Architecture: Well-organized project structure separating concerns into controllers, models, routes, and services.
+---
 
-Responsive UI: A modern and responsive frontend built with React and Vite.
+## ✨ Key Features
 
-🛠️ Tech Stack
-Frontend:
+* 🔐 **Secure Authentication**
+  User registration and login with **JWT** and **Bcrypt.js** password hashing.
 
-React.js
+* 💪 **Workout Management**
+  Full CRUD functionality to create, read, update, and delete workout logs.
 
-Vite (Build tool)
+* 🤖 **AI Fitness Assistant**
+  Integrated chatbot for exercise tips, diet suggestions, and recovery advice.
 
-CSS for styling
+* 🛡️ **Protected Routes**
+  Custom authentication middleware ensures data privacy and security.
 
-Backend:
+* ⚡ **Modern UI**
+  Fast and responsive frontend built using **React** and **Vite**.
 
-Node.js & Express.js (Web Framework)
+* 🏗️ **Scalable Architecture**
+  Clean separation using Controllers, Models, Routes, and Services.
 
-MongoDB (Database)
+---
 
-Mongoose (ODM)
+## 🛠️ Tech Stack
 
-JWT (for security)
+### Frontend
 
-📁 Project Structure
-This project is divided into two main folders: frontend and backend.
+* **Library:** React.js
+* **Build Tool:** Vite
+* **Styling:** CSS3
+* **State Management:** Context API / Hooks
 
-Backend Structure (backend/)
-Referencing image_0.png:
+### Backend
 
-Plaintext
+* **Environment:** Node.js
+* **Framework:** Express.js
+* **Database:** MongoDB (Mongoose ODM)
+* **Security:** JSON Web Tokens (JWT)
+* **AI Integration:** OpenAI / Gemini APIs
+
+---
+
+## 📁 Project Structure
+
+### 🖥️ Backend
+
+```
 backend/
-├── config/             # Database connection configuration
-│   └── db.js           # Connects to MongoDB
-├── controllers/        # Request handling logic
-│   ├── aiController.js # Logic for AI requests
-│   ├── authController.js # Logic for login/register
-│   └── workoutController.js # Logic for CRUD operations on workouts
-├── middleware/         # Custom middleware
-│   └── authMiddleware.js # Middleware to verify JWT tokens
-├── models/             # Database schemas
-│   ├── User.js         # User model schema
-│   └── Workout.js      # Workout model schema
-├── routes/             # API route definitions
-│   ├── aiRoutes.js     # Routes for AI assistant
-│   ├── userRoutes.js   # Routes for user authentication
-│   └── workoutRoutes.js # Routes for workout operations
-├── services/           # External service integrations
-│   └── aiService.js    # Communicates with external AI APIs
-├── .env                # Environment variables (private)
-├── .gitignore          # Files to exclude from Git
-├── server.js           # Entry point for the backend application
-└── package.json        # Dependencies and scripts
-Frontend Structure (frontend/)
-Referencing image_1.png:
+├── config/         # Database configuration
+├── controllers/    # Business logic
+├── middleware/     # Authentication middleware
+├── models/         # Mongoose schemas
+├── routes/         # API endpoints
+├── services/       # External API integrations
+├── server.js       # Entry point
+└── .env            # Environment variables
+```
 
-Plaintext
+### 🎨 Frontend
+
+```
 frontend/
-├── src/                # Source files
-│   ├── assets/         # Images and other static files
-│   │   └── fitness-app.png
-│   ├── components/      # Reusable UI components
-│   │   └── Chatbot.jsx # Component for the AI chat interface
-│   ├── pages/           # Page components
-│   ├── App.jsx          # Main App component
-│   ├── index.css        # Global styles
-│   └── main.jsx         # Entry point for React
-├── eslint.config.js    # Linter configuration
-├── index.html          # Main HTML file
-└── vite.config.js      # Configuration for Vite
-🚀 Getting Started
-Prerequisites
-Node.js installed on your machine.
+├── src/
+│   ├── assets/       # Static files
+│   ├── components/   # Reusable UI components
+│   ├── pages/        # Application pages
+│   ├── App.jsx       # Main component
+│   └── main.jsx      # Entry file
+└── vite.config.js
+```
 
-A MongoDB Atlas account (or local MongoDB setup).
+---
 
-An API key for the AI service used in aiService.js (e.g., OpenAI API key).
+## 🚀 Getting Started
 
-1. Backend Setup
-Open a terminal and navigate to the backend folder:
+### Prerequisites
 
-Bash
+* Node.js installed
+* MongoDB Atlas account or local MongoDB
+* AI API Key (OpenAI / Gemini)
+
+---
+
+### 1️⃣ Backend Setup
+
+```bash
 cd backend
-Install dependencies:
-
-Bash
 npm install
-Create a .env file in the backend root folder and populate it with your configuration:
+```
 
-Code snippet
+Create a `.env` file and add:
+
+```
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_super_secret_key
-AI_API_KEY=your_ai_api_key_if_applicable
-Run the backend server in development mode (using nodemon):
+JWT_SECRET=your_secret_key
+AI_API_KEY=your_ai_key
+```
 
-Bash
+Run the backend:
+
+```bash
 npm run dev
-# or if not using nodemon
-node server.js
-2. Frontend Setup
-Open a new terminal and navigate to the frontend folder:
+```
 
-Bash
+---
+
+### 2️⃣ Frontend Setup
+
+```bash
 cd frontend
-Install dependencies:
-
-Bash
 npm install
-Run the frontend development server:
-
-Bash
 npm run dev
-The application will typically start at http://localhost:5173.
+```
 
-📡 API Endpoints
-User Routes (/api/users)
-POST /register: Create a new user account.
+🌐 Application runs at: **[http://localhost:5173](http://localhost:5173)**
 
-POST /login: Authenticate a user and return a token.
+---
 
-Workout Routes (/api/workouts) - Protected, requires JWT
-GET /: Get all workouts for the logged-in user.
+## 📡 API Endpoints
 
-POST /: Add a new workout.
+| Method | Endpoint            | Description                   | Access  |
+| ------ | ------------------- | ----------------------------- | ------- |
+| POST   | /api/users/register | Register new user             | Public  |
+| POST   | /api/users/login    | Login & get token             | Public  |
+| GET    | /api/workouts       | Get all workouts              | Private |
+| POST   | /api/workouts       | Add new workout               | Private |
+| POST   | /api/ai/chat        | AI fitness assistant response | Private |
 
-PATCH /:id: Update a specific workout.
+---
 
-DELETE /:id: Delete a specific workout.
+## 🤝 Contributing
 
-AI Routes (/api/ai) - Protected, requires JWT
-POST /chat: Send a user prompt to the AI fitness assistant.
+Contributions are welcome and appreciated!
 
-🤝 Contributing
-Contributions are welcome! If you have suggestions or find bugs, feel free to open an issue or create a pull request.
+1. Fork the repository
+2. Create a new branch (`feature/your-feature`)
+3. Commit your changes
+4. Push to your branch
+5. Open a Pull Request
 
-📜 License
-This project is licensed under the MIT License.
+---
 
-Developed with ❤️ by Shivam.
+## 📜 License
+
+This project is licensed under the **MIT License**.
+
+---
+
+## 👨‍💻 Author
+
+**Shivam**
+B.Tech CSE Student
+SRM Institute of Science and Technology (Delhi NCR)
+
+---
+
+## ❤️ Acknowledgment
+
+Built with passion to help people stay consistent and motivated in their fitness journey.
