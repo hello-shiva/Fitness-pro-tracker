@@ -1,0 +1,274 @@
+/* ==========================================================================
+   1. FONTS & VARIABLES (Dark Gym Theme)
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;600;800&display=swap');
+
+:root {
+  --bg-color: #121212;      /* Deep Charcoal / Almost Black Background */
+  --panel-bg: #1e1e1e;      /* Dark Gray for Cards */
+  --accent-color: #39FF14;  /* High-energy Neon Green */
+  --text-main: #ffffff;     /* Bright White for Readability */
+  --text-muted: #a0a0a0;    /* Muted Gray for Labels/Secondary Text */
+}
+
+/* ==========================================================================
+   2. GLOBAL LAYOUT (App Wrapper & Body)
+   ========================================================================== */
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+}
+
+/* Ye aapki puri app ko dark background dega */
+.gym-app-wrapper {
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   3. DASHBOARD GRIDS & HEADERS
+   ========================================================================== */
+.dashboard-container {
+  display: grid;
+  grid-template-columns: 1fr 380px; /* Left content bada, right chat fixed */
+  gap: 30px;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 30px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  grid-column: 1 / -1; 
+}
+
+.welcome-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.8rem;
+  color: var(--text-main);
+  margin: 0;
+  letter-spacing: 1.5px;
+}
+
+/* ==========================================================================
+   4. REUSABLE COMPONENTS (Cards, Inputs, Buttons)
+   ========================================================================== */
+/* Main Card Design */
+.gym-card {
+  background-color: var(--panel-bg);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-top: 4px solid var(--accent-color);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  color: var(--text-main);
+}
+
+.gym-card h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  margin-top: 0;
+  border-bottom: 1px solid #333;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+/* Form Layouts */
+.form-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap; 
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 200px;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* Custom Dark Inputs */
+.gym-input {
+  background-color: #2a2a2a; 
+  border: 1px solid #444;
+  color: var(--text-main);
+  padding: 12px 15px;
+  border-radius: 6px;
+  font-family: 'Poppins', sans-serif;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.gym-input:focus {
+  border-color: var(--accent-color);
+}
+
+/* Neon Green Primary Button */
+.btn-save {
+  background-color: var(--accent-color);
+  color: #000;
+  font-weight: 800;
+  font-family: 'Poppins', sans-serif;
+  text-transform: uppercase;
+  border: none;
+  padding: 15px;
+  border-radius: 6px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.btn-save:hover {
+  background-color: #32e613;
+  box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+}
+
+/* Red Logout/Delete Button */
+.btn-logout {
+  background: transparent;
+  border: 1px solid #ff4d4d;
+  color: #ff4d4d;
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+  background: #ff4d4d;
+  color: #fff;
+}
+
+/* ==========================================================================
+   5. TABLES (History & Admin Dashboard)
+   ========================================================================== */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--text-main);
+  text-align: left;
+}
+
+.table th {
+  padding: 15px 10px;
+  border-bottom: 1px solid #444;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.table td {
+  padding: 15px 10px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.table tbody tr:hover {
+  background-color: #2a2a2a;
+}
+
+/* ==========================================================================
+   6. AI FITNESS COACH CHATBOX
+   ========================================================================== */
+.ai-chat-container {
+  background-color: var(--panel-bg);
+  border-radius: 12px;
+  border-top: 4px solid var(--accent-color);
+  display: flex;
+  flex-direction: column;
+  height: 650px; 
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.ai-chat-header {
+  background-color: #111;
+  padding: 18px 20px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #333;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ai-chat-body {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* AI Message */
+.ai-message {
+  background-color: #2a2a2a;
+  color: #ffffff; 
+  padding: 14px 18px;
+  border-radius: 12px 12px 12px 0; 
+  align-self: flex-start;
+  max-width: 85%;
+  border-left: 3px solid var(--accent-color);
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+/* User Message */
+.user-message {
+  background-color: var(--accent-color);
+  color: #000000; 
+  padding: 14px 18px;
+  border-radius: 12px 12px 0 12px; 
+  align-self: flex-end;
+  max-width: 85%;
+  font-weight: 600;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.ai-chat-input-area {
+  padding: 15px;
+  background-color: var(--panel-bg);
+  border-top: 1px solid #333;
+  display: flex;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   7. CUSTOM SCROLLBAR (Pro Vibe!)
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
