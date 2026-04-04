@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
         enum: ['user','admin'],
         default:'user'
     },
-    feePaid: {
+    feeValidUntil: {
         type : Date,
         default :null
     }
@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.pre('save',async function (next) {
     if(!this.isModified('password')){
-        next();
+       return ;
     }
 
     const salt = await bcrypt.genSalt(10);

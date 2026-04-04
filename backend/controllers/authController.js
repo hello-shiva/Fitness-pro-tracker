@@ -98,16 +98,20 @@ const updateFeeStatus = async (req,res) =>{
 
 const updateUserFee = async (req, res) => {
     try {
-        if (req.user.role !== 'admin') {
+        if (!req.user || req.user.role !== 'admin') {
             return res.status(403).json({ message: 'Not authorized as an admin' });
         }
+        
         const user = await User.findById(req.params.id);
 
         if (user) {
-            const newDate = new Date();
-            newDate.setDate(newDate.getDate() + 30);
+            let baseDate = new Date();
+            if (user.feeValidUntil && new Date(user.feeValidUntil) > new Date()) {
+                baseDate = new Date(user.feeValidUntil);
+            }
+            baseDate.setDate(baseDate.getDate() + 30);
 
-            user.feeValidUntil = newDate;
+            user.feeValidUntil = baseDate;
             const updatedUser = await user.save();
 
             res.json({ message: 'Fee updated successfully', user: updatedUser });
@@ -115,6 +119,7 @@ const updateUserFee = async (req, res) => {
             res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
+        console.error("Fee Update Error: ", error);
         res.status(500).json({ message: error.message });
     }
 };
