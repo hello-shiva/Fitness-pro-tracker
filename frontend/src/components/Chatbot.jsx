@@ -1,80 +1,109 @@
 import { useState } from 'react';
+import html2pdf from 'html2pdf.js';
 
 export default function Chatbot() {
-  const [messages, setMessages] = useState([
-    { role: 'ai', text: 'Hi! I am your AI Fitness Coach. Ask me anything about workouts, diet, or gym doubts!' }
-  ]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [goal, setGoal] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiPlan, setAiPlan] = useState('');
 
-  const handleSend = async (e) => {
-    if (e) e.preventDefault(); 
-    if (!input.trim()) return;
-    const userMessage = { role: 'user', text: input };
-    setMessages((prev) => [...prev, userMessage]);
-    setInput(''); 
-    setIsLoading(true);
+  const handleGenerate = async (e) => {
+    e.preventDefault();
+    setIsGenerating(true);
+    setAiPlan('');
+
+    const token = localStorage.getItem('token');
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/chat', {
+      const response = await fetch('http://localhost:5000/api/ai/generate-plan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}` // Optional: Agar protect middleware lagaya hai toh
         },
-        body: JSON.stringify({ prompt: userMessage.text })
+        body: JSON.stringify({ goal })
       });
 
       const data = await response.json();
-
+      
       if (response.ok) {
-        setMessages((prev) => [...prev, { role: 'ai', text: data.reply }]);
+        setAiPlan(data.plan);
       } else {
-        setMessages((prev) => [...prev, { role: 'ai', text: data.message || 'Server error.' }]);
+        alert(data.message || 'Failed to generate plan');
       }
     } catch (error) {
-      setMessages((prev) => [...prev, { role: 'ai', text: 'Network error. Make sure the backend server is running!' }]);
+      console.error("Error generating plan: ", error);
+      alert("Something went wrong!");
     } finally {
-      setIsLoading(false);
+      setIsGenerating(false);
     }
   };
 
+  const downloadPDF = () => {
+    const element = document.getElementById('pdf-content');
+    
+    const opt = {
+      margin:       10,
+      filename:     'My_7_Day_Fitness_Plan.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
+  };
+
   return (
-    <div className="card shadow-sm mt-4">
+    <div className="card shadow-sm border-0 h-100">
       <div className="card-header bg-dark text-white fw-bold">
-        🤖 AI Fitness Coach
+        🤖 AI 7-Day Plan Generator
       </div>
-      <div className="card-body" style={{ height: '300px', overflowY: 'auto', backgroundColor: '#f8f9fa' }}>
-        {messages.map((msg, index) => (
-          <div key={index} className={`d-flex mb-3 ${msg.role === 'user' ? 'justify-content-end' : 'justify-content-start'}`}>
-            <div 
-              className={`p-3 rounded-3 ${msg.role === 'user' ? 'bg-primary text-white' : 'bg-white border shadow-sm'}`}
-              style={{ maxWidth: '85%' }}
-            >
-              {msg.text}
-            </div>
+      
+      <div className="card-body d-flex flex-column" style={{ overflowY: 'auto' }}>
+        <p className="text-muted mb-4">
+          Tell AI your fitness goal (e.g., "Lose 5kg in 2 months", "Gain muscle for a marathon"), and get a custom 7-day diet and workout PDF!
+        </p>
+
+        <form onSubmit={handleGenerate} className="mb-4">
+          <div className="input-group">
+            <input 
+              type="text" 
+              className="form-control" 
+              placeholder="What is your fitness goal?" 
+              value={goal}
+              onChange={(e) => setGoal(e.target.value)}
+              required
+            />
+            <button className="btn btn-primary fw-bold" type="submit" disabled={isGenerating}>
+              {isGenerating ? 'Generating...' : 'Generate Plan'}
+            </button>
           </div>
-        ))}
-        {isLoading && (
-          <div className="text-muted small ms-2 fst-italic">Coach is typing...</div>
-        )}
-      </div>
-      <div className="card-footer bg-white">
-        <form onSubmit={handleSend} className="d-flex">
-          <input 
-            type="text" 
-            className="form-control me-2" 
-            placeholder="Ask about a workout..." 
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            disabled={isLoading}
-            autoFocus
-          />
-          <button type="submit" className="btn btn-primary fw-bold" disabled={isLoading}>
-            Send
-          </button>
         </form>
+
+        {isGenerating && (
+          <div className="text-center my-5">
+            <div className="spinner-border text-primary mb-2" role="status"></div>
+            <p className="fw-bold text-primary">AI is analyzing your goal and creating a custom plan...</p>
+          </div>
+        )}
+        {aiPlan && !isGenerating && (
+          <div className="border rounded p-4 bg-light flex-grow-1 position-relative mt-3">
+            <div className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                <h5 className="text-success fw-bold mb-0">Plan Generated!</h5>
+                <button 
+                  onClick={downloadPDF} 
+                  className="btn btn-danger btn-sm fw-bold shadow-sm"
+                >
+                  📄 Download PDF
+                </button>
+            </div>
+            <div 
+              id="pdf-content" 
+              className="p-3 bg-white rounded shadow-sm"
+              style={{ minHeight: '300px' }}
+              dangerouslySetInnerHTML={{ __html: aiPlan }} 
+            />
+          </div>
+        )}
       </div>
     </div>
   );

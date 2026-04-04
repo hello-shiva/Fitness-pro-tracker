@@ -46,5 +46,30 @@ const deleteWorkout = async(req,res)=>{
         res.status(500).json({message:error.message});
     }
 };
+const getWorkoutStats = async (req, res) => {
+    try {
+        const workouts = await Workout.find({ user: req.user._id });
+        const weekStats = {
+            Monday: { day: 'Mon', caloriesBurned: 0, duration: 0 },
+            Tuesday: { day: 'Tue', caloriesBurned: 0, duration: 0 },
+            Wednesday: { day: 'Wed', caloriesBurned: 0, duration: 0 },
+            Thursday: { day: 'Thu', caloriesBurned: 0, duration: 0 },
+            Friday: { day: 'Fri', caloriesBurned: 0, duration: 0 },
+            Saturday: { day: 'Sat', caloriesBurned: 0, duration: 0 },
+            Sunday: { day: 'Sun', caloriesBurned: 0, duration: 0 },
+        };
+        workouts.forEach(workout => {
+            if (weekStats[workout.dayOfWeek]) {
+                weekStats[workout.dayOfWeek].caloriesBurned += workout.caloriesBurned;
+                weekStats[workout.dayOfWeek].duration += workout.durationInMinutes;
+            }
+        });
+        const chartData = Object.values(weekStats);
 
-module.exports ={createWorkout,getUserWorkouts, deleteWorkout};
+        res.json(chartData);
+    } catch (error) {
+        console.error("Chart Data Error: ", error);
+        res.status(500).json({ message: error.message });
+    }
+};
+module.exports ={createWorkout,getUserWorkouts, deleteWorkout,getWorkoutStats};

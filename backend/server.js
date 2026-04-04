@@ -18,7 +18,7 @@ app.get('/',(req,res) =>{
 
 app.use('/api/users',require('./routes/userRoutes'));
 app.use('/api/workouts',require('./routes/workoutRoutes'));
-app.use('/api/chat',require('./routes/aiRoutes'));
+app.use('/api/ai',require('./routes/aiRoutes'));
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT ,()=>{

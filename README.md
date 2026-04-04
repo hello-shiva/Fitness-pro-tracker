@@ -1,34 +1,31 @@
 # 🏋️‍♂️ FITNESS-TRACKER-PRO
 
-A **comprehensive MERN Stack Fitness Management System with AI Integration** designed to help users track workouts, monitor progress, and receive intelligent fitness guidance.
+A **comprehensive MERN Stack Fitness Management System** with advanced AI integration. Designed to help users track workouts, visualize progress, and generate personalized 7-day fitness plans exported directly as PDFs.
 
 ---
 
 ## 🌟 Overview
 
-**FITNESS-TRACKER-PRO** is a high-performance full-stack web application that enables users to manage their fitness journey efficiently. From logging workouts to interacting with an AI-powered assistant, the platform delivers a modern and scalable experience.
+**FITNESS-TRACKER-PRO** is a high-performance full-stack web application that elevates the fitness journey. Moving beyond simple logging, it offers an interactive graphical dashboard, role-based access control (Admin/User), and an integrated AI Coach powered by **Google Gemini 2.5 Flash** for real-time advice and custom diet/workout generation.
 
 ---
 
 ## ✨ Key Features
 
-* 🔐 **Secure Authentication**
-  User registration and login with **JWT** and **Bcrypt.js** password hashing.
+* 📊 **Interactive Data Visualization**
+  A dynamic dashboard using **Recharts** to display weekly fitness progress with bar and line charts.
+
+* 🤖 **AI 7-Day Plan & PDF Generator**
+  Generate personalized diet & workout plans using **Gemini 2.5 Flash API**, downloadable as PDFs via `html2pdf.js`.
+
+* 🛡️ **Role-Based Authentication (Admin & User)**
+  Secure login system using **JWT** and **Bcrypt.js**, with admin controls for user management.
 
 * 💪 **Workout Management**
-  Full CRUD functionality to create, read, update, and delete workout logs.
+  Full CRUD functionality with backend aggregation for accurate analytics.
 
-* 🤖 **AI Fitness Assistant**
-  Integrated chatbot for exercise tips, diet suggestions, and recovery advice.
-
-* 🛡️ **Protected Routes**
-  Custom authentication middleware ensures data privacy and security.
-
-* ⚡ **Modern UI**
-  Fast and responsive frontend built using **React** and **Vite**.
-
-* 🏗️ **Scalable Architecture**
-  Clean separation using Controllers, Models, Routes, and Services.
+* ⚡ **Modern UI/UX**
+  Responsive frontend built with **React, Vite, and Bootstrap**, featuring a clean tab-based navigation.
 
 ---
 
@@ -36,18 +33,19 @@ A **comprehensive MERN Stack Fitness Management System with AI Integration** des
 
 ### Frontend
 
-* **Library:** React.js
-* **Build Tool:** Vite
-* **Styling:** CSS3
-* **State Management:** Context API / Hooks
+* React.js
+* Vite
+* CSS3, Bootstrap 5
+* Recharts
+* html2pdf.js
 
 ### Backend
 
-* **Environment:** Node.js
-* **Framework:** Express.js
-* **Database:** MongoDB (Mongoose ODM)
-* **Security:** JSON Web Tokens (JWT)
-* **AI Integration:** OpenAI / Gemini APIs
+* Node.js
+* Express.js
+* MongoDB (Mongoose ODM)
+* JWT, Bcrypt.js
+* @google/genai (Gemini 2.5 Flash)
 
 ---
 
@@ -55,28 +53,27 @@ A **comprehensive MERN Stack Fitness Management System with AI Integration** des
 
 ### 🖥️ Backend
 
-```
+```text
 backend/
-├── config/         # Database configuration
-├── controllers/    # Business logic
-├── middleware/     # Authentication middleware
-├── models/         # Mongoose schemas
-├── routes/         # API endpoints
-├── services/       # External API integrations
-├── server.js       # Entry point
-└── .env            # Environment variables
+├── config/
+├── controllers/
+├── middleware/
+├── models/
+├── routes/
+├── server.js
+└── .env
 ```
 
 ### 🎨 Frontend
 
-```
+```text
 frontend/
+├── public/
 ├── src/
-│   ├── assets/       # Static files
-│   ├── components/   # Reusable UI components
-│   ├── pages/        # Application pages
-│   ├── App.jsx       # Main component
-│   └── main.jsx      # Entry file
+│   ├── components/
+│   ├── pages/
+│   ├── App.jsx
+│   └── main.jsx
 └── vite.config.js
 ```
 
@@ -87,28 +84,28 @@ frontend/
 ### Prerequisites
 
 * Node.js installed
-* MongoDB Atlas account or local MongoDB
-* AI API Key (OpenAI / Gemini)
+* MongoDB Atlas or local MongoDB
+* Google Gemini API Key
 
 ---
 
-### 1️⃣ Backend Setup
+### Backend Setup
 
 ```bash
 cd backend
 npm install
 ```
 
-Create a `.env` file and add:
+Create `.env` file:
 
 ```
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
-AI_API_KEY=your_ai_key
+GEMINI_API_KEY=your_gemini_api_key
 ```
 
-Run the backend:
+Run backend:
 
 ```bash
 npm run dev
@@ -116,7 +113,7 @@ npm run dev
 
 ---
 
-### 2️⃣ Frontend Setup
+### Frontend Setup
 
 ```bash
 cd frontend
@@ -124,37 +121,53 @@ npm install
 npm run dev
 ```
 
-🌐 Application runs at: **[http://localhost:5173](http://localhost:5173)**
+🌐 App runs at: **[http://localhost:5173](http://localhost:5173)**
 
 ---
 
 ## 📡 API Endpoints
 
-| Method | Endpoint            | Description                   | Access  |
-| ------ | ------------------- | ----------------------------- | ------- |
-| POST   | /api/users/register | Register new user             | Public  |
-| POST   | /api/users/login    | Login & get token             | Public  |
-| GET    | /api/workouts       | Get all workouts              | Private |
-| POST   | /api/workouts       | Add new workout               | Private |
-| POST   | /api/ai/chat        | AI fitness assistant response | Private |
+### 🔐 Authentication & Users
+
+| Method | Endpoint            | Description   | Access |
+| ------ | ------------------- | ------------- | ------ |
+| POST   | /api/users/register | Register user | Public |
+| POST   | /api/users/login    | Login user    | Public |
+| GET    | /api/users          | Get all users | Admin  |
+| PUT    | /api/users/fee/:id  | Extend fee    | Admin  |
+| DELETE | /api/users/:id      | Delete user   | Admin  |
+
+### 🏋️ Workouts
+
+| Method | Endpoint            | Description      | Access  |
+| ------ | ------------------- | ---------------- | ------- |
+| POST   | /api/workouts       | Add workout      | Private |
+| GET    | /api/workouts       | Get workouts     | Private |
+| DELETE | /api/workouts/:id   | Delete workout   | Private |
+| GET    | /api/workouts/stats | Stats for charts | Private |
+
+### 🤖 AI Coach
+
+| Method | Endpoint              | Description   | Access  |
+| ------ | --------------------- | ------------- | ------- |
+| POST   | /api/ai/chat          | Ask AI        | Private |
+| POST   | /api/ai/generate-plan | Generate plan | Private |
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome and appreciated!
-
-1. Fork the repository
-2. Create a new branch (`feature/your-feature`)
-3. Commit your changes
-4. Push to your branch
-5. Open a Pull Request
+1. Fork the repo
+2. Create branch (`feature/your-feature`)
+3. Commit changes
+4. Push branch
+5. Open PR
 
 ---
 
 ## 📜 License
 
-This project is licensed under the **MIT License**.
+MIT License
 
 ---
 
@@ -162,10 +175,4 @@ This project is licensed under the **MIT License**.
 
 **Shivam**
 B.Tech CSE Student
-SRM Institute of Science and Technology (Delhi NCR)
-
----
-
-## ❤️ Acknowledgment
-
-Built with passion to help people stay consistent and motivated in their fitness journey.
+Passionate about Full-Stack Development, Data Analytics & AI Integration 🚀
