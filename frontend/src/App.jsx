@@ -4,6 +4,7 @@ import Register from './pages/Register';
 import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import { Toaster } from 'react-hot-toast';
+import TrainerDashboard from './pages/TrainerDashboard';
 // import './index.css';
 
 function App() {
@@ -22,8 +23,6 @@ function App() {
             },
           }}
         />
-
-        {/* Assuming 'container mt-4' is Bootstrap - this keeps your layout centered */}
         <div className="container mt-4">
           <Routes>
             <Route path="/" element={<Navigate to="/login" />} />
@@ -32,6 +31,7 @@ function App() {
             <Route path='/register' element={<Register/>}/>
             <Route path="/dashboard" element={<UserDashboard />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/trainer-dashboard" element={<TrainerDashboard />} />
           </Routes>
         </div>
       </div>

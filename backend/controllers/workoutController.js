@@ -1,4 +1,5 @@
 const Workout =require('../models/Workout');
+const User = require('../models/User');
 const {estimateCaloriesAI} =require('../services/aiService');
 
 const createWorkout =async(req,res) =>{
@@ -72,4 +73,14 @@ const getWorkoutStats = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-module.exports ={createWorkout,getUserWorkouts, deleteWorkout,getWorkoutStats};
+
+const getMyClients = async (req,res) =>{
+    try{
+        const clients = await User.find({assignedTrainer:req.user.id}).select('-password');
+        res.json(clients);
+    } catch (error){
+        res.status(500).json({message: error.message});
+    }
+};
+
+module.exports ={createWorkout,getUserWorkouts, deleteWorkout,getWorkoutStats,getMyClients};
