@@ -5,19 +5,19 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
+    setIsLoading(true);
 
     try {
       const response = await fetch('http://localhost:5000/api/users/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
@@ -29,59 +29,62 @@ export default function Login() {
 
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data));
+      
       if (data.role === 'admin') {
         navigate('/admin');
       } else if (data.role === 'trainer') {
-        navigate('/trainer-dashboard'); // 🟢 Trainer ko uske asli page par bhejein
+        navigate('/trainer-dashboard');
       } else {
-        navigate('/dashboard'); // Normal user ke liye
+        navigate('/dashboard'); 
       }
     } catch (err) {
       setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="row justify-content-center mt-5">
-      <div className="col-md-6 col-lg-4">
-        <div className="card shadow-sm">
-          <div className="card-body p-4">
-            <h2 className="text-center mb-4">Fitness Pro Login</h2>
-            {error && <div className="alert alert-danger">{error}</div>}
+    <div className="gym-app-wrapper" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div className="gym-card" style={{ maxWidth: '400px', width: '100%', textAlign: 'center' }}>
+        
+        {/* 🟢 Naya Logo Yahan Add Kiya Hai */}
+        <img src="/fitness-app.png" alt="Fitness Pro Logo" style={{ width: '80px', marginBottom: '15px', filter: 'drop-shadow(0 0 10px var(--accent-color))' }} />
+        
+        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '2px', color: 'white', marginBottom: '25px' }}>FITNESS PRO LOGIN</h2>
+        
+        {error && <div style={{ backgroundColor: 'rgba(255, 77, 77, 0.1)', color: '#ff4d4d', padding: '10px', borderRadius: '5px', marginBottom: '15px', fontWeight: 'bold' }}>{error}</div>}
 
-            <form onSubmit={handleLogin}>
-              <div className="mb-3">
-                <label className="form-label">Email address</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Password</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <button type="submit" className="btn btn-primary w-100 fw-bold">
-                Log In
-              </button>
-            </form>
-            <div className="text-center mt-4">
-              <span className="text-muted">New user? </span>
-              <Link to="/register" className="text-decoration-none fw-bold">Create an account</Link>
-            </div>
+        <form onSubmit={handleLogin}>
+          <div style={{ textAlign: 'left', marginBottom: '15px' }}>
+            <label style={{ color: 'var(--text-muted)', fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>Email Address</label>
+            <input
+              type="email"
+              className="gym-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
+          <div style={{ textAlign: 'left', marginBottom: '25px' }}>
+            <label style={{ color: 'var(--text-muted)', fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>Password</label>
+            <input
+              type="password"
+              className="gym-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button type="submit" className="btn-save" style={{ width: '100%' }} disabled={isLoading}>
+            {isLoading ? 'AUTHENTICATING...' : 'LOG IN'}
+          </button>
+        </form>
+        
+        <div style={{ marginTop: '20px', color: 'var(--text-muted)' }}>
+          New user? <Link to="/register" style={{ color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 'bold' }}>Create an account</Link>
         </div>
       </div>
     </div>
   );
-
 }

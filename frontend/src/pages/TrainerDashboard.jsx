@@ -10,127 +10,63 @@ export default function TrainerDashboard() {
   const [clients, setClients] = useState([]); 
   const [isLoading, setIsLoading] = useState(true);
   const [chartData, setChartData] = useState([]);
-  
-  // 🟢 Naye States Workout ke liye
-  const [workouts, setWorkouts] = useState([]);
-  const [dayOfWeek, setDayOfWeek] = useState('Monday');
-  const [exerciseName, setExerciseName] = useState('');
-  const [durationInMinutes, setDurationInMinutes] = useState('');
-  const [isLogging, setIsLogging] = useState(false);
-
   const [activeTab, setActiveTab] = useState('clients'); 
+  const [workouts, setWorkouts] = useState([]);
 
-  const getFreshToken = () => localStorage.getItem('token');
-
-  // --- API FETCH FUNCTIONS ---
-  const fetchMyClients = async () => {
-    const token = getFreshToken();
+  const fetchMyClients = async (token) => {
     try {
-      const res = await fetch('http://localhost:5000/api/workouts/my-clients', {
-      headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await fetch('http://localhost:5000/api/workouts/my-clients', { headers: { 'Authorization': `Bearer ${token}` } });
       const data = await res.json();
       if (res.ok) setClients(data);
-    } catch (error) {
-      console.error("Failed to fetch clients:", error);
-    }
+    } catch (error) { console.error(error); }
   };
 
-  const fetchStats = async () => {
-    const token = getFreshToken();
+  const fetchStats = async (token) => {
     try {
-      const res = await fetch('http://localhost:5000/api/workouts/stats', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const res = await fetch('http://localhost:5000/api/workouts/stats', { headers: { 'Authorization': `Bearer ${token}` } });
       const data = await res.json();
       if (res.ok) setChartData(data);
-    } catch (error) {
-      console.error("Failed to fetch stats:", error);
-    }
+    } catch (error) { console.error(error); }
   };
 
-  const fetchWorkouts = async () => {
-    const token = getFreshToken();
+  const fetchWorkouts = async (token) => {
     try {
-      const response = await fetch('http://localhost:5000/api/workouts', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await response.json();
-      if (response.ok) setWorkouts(data);
-    } catch (error) {
-      console.error("Failed to fetch workouts: ", error);
-    }
+      const res = await fetch('http://localhost:5000/api/workouts', { headers: { 'Authorization': `Bearer ${token}` } });
+      const data = await res.json();
+      if (res.ok) setWorkouts(data);
+    } catch (error) { console.error(error); }
   };
 
-  // --- WORKOUT LOGIC ---
-  const handleLogWorkout = async (e) => {
-    e.preventDefault();
-    setIsLogging(true);
-    const token = getFreshToken();
-
-    try {
-      const response = await fetch('http://localhost:5000/api/workouts', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ dayOfWeek, exerciseName, durationInMinutes: Number(durationInMinutes) })
-      });
-
-      if (response.ok) {
-        toast.success("Workout saved successfully!");
-        fetchWorkouts();
-        fetchStats();
-        setExerciseName('');
-        setDurationInMinutes('');
-      } else {
-        toast.error("Failed to save workout.");
-      }
-    } catch (error) {
-      console.error("Error logging workout:", error);
-      toast.error("Error connecting to server.");
-    } finally {
-      setIsLogging(false);
-    }
-  };
-
-  const handleDeleteWorkout = async (id) => {
-    if (window.confirm("Delete this workout log?")) {
-      const token = getFreshToken();
-      try {
-        const response = await fetch(`http://localhost:5000/api/workouts/${id}`, {
-          method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (response.ok) {
-          toast.success("Workout deleted!");
-          fetchWorkouts();
-          fetchStats();
-        }
-      } catch (error) {
-        console.error("Error deleting workout:", error);
-      }
-    }
-  };
-
+  // 🟢 SMART AUTO-SYNC LOGIC
   useEffect(() => {
-    const token = getFreshToken();
+    const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
     
     if (storedUser && storedUser !== "undefined" && token) {
-      const parsedUser = JSON.parse(storedUser);
+      setUser(JSON.parse(storedUser)); 
       
-      if (parsedUser.role !== 'trainer') {
-        toast.error("Access Denied: Trainers Only!");
-        navigate('/dashboard');
-      } else {
-        setUser(parsedUser);
-        fetchMyClients();
-        fetchStats();
-        fetchWorkouts(); // 🟢 Trainer ke workouts fetch karein
-      }
+      const fetchFreshProfile = async () => {
+        try {
+          const res = await fetch('http://localhost:5000/api/users/trainer', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const freshData = await res.json();
+          if (res.ok) {
+            localStorage.setItem('user', JSON.stringify(freshData));
+            // Agar Admin ne ise demote karke wapas user bana diya, toh User page par bhejo
+            if (freshData.role === 'user') {
+               navigate('/dashboard');
+            } else {
+               setUser(freshData); // Salary aur Status automatic update hoga
+            }
+          }
+        } catch (error) { console.error(error); }
+      };
+
+      fetchFreshProfile();
+      fetchMyClients(token);
+      fetchStats(token);
+      fetchWorkouts(token);
     } else {
       navigate('/login');
     }
@@ -147,67 +83,52 @@ export default function TrainerDashboard() {
   return (
     <div className="gym-app-wrapper" style={{ padding: '20px' }}>
       
-      {/* 🟢 TOP HEADER */}
-      <header className="dashboard-header" style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-        <h1 className="welcome-text">
-          Coach: {user.name} <span style={{ color: 'var(--accent-color)', fontSize: '1.5rem' }}>[ TRAINER ]</span>
-        </h1>
+      <header className="dashboard-header" style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <img src="/fitness-app.png" alt="Gym Logo" style={{ width: '50px', height: '50px', filter: 'drop-shadow(0 0 5px var(--accent-color))' }} />
+          <h1 className="welcome-text mb-0">COACH: {user.name.toUpperCase()} <span style={{ color: 'var(--accent-color)', fontSize: '1.5rem' }}>[ TRAINER ]</span></h1>
+        </div>
         <button onClick={handleLogout} className="btn-logout">Logout</button>
       </header>
 
-      {/* 🟢 NAVIGATION TABS */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto 30px auto', display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-        <button 
-          className="btn-save" 
-          style={{ backgroundColor: activeTab === 'clients' ? 'var(--accent-color)' : '#2a2a2a', color: activeTab === 'clients' ? '#000' : 'white', width: 'auto' }}
-          onClick={() => setActiveTab('clients')}>👥 My Clients (PT)
-        </button>
-        <button 
-          className="btn-save" 
-          style={{ backgroundColor: activeTab === 'workouts' ? 'var(--accent-color)' : '#2a2a2a', color: activeTab === 'workouts' ? '#000' : 'white', width: 'auto' }}
-          onClick={() => setActiveTab('workouts')}>📝 Log & History
-        </button>
-        <button 
-          className="btn-save" 
-          style={{ backgroundColor: activeTab === 'overview' ? 'var(--accent-color)' : '#2a2a2a', color: activeTab === 'overview' ? '#000' : 'white', width: 'auto' }}
-          onClick={() => setActiveTab('overview')}>📊 My Progress
-        </button>
-        <button 
-          className="btn-save" 
-          style={{ backgroundColor: activeTab === 'ai' ? 'var(--accent-color)' : '#2a2a2a', color: activeTab === 'ai' ? '#000' : 'white', width: 'auto' }}
-          onClick={() => setActiveTab('ai')}>🤖 AI Coach
-        </button>
+      {/* 🟢 SALARY STATUS BANNER */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto 20px auto', backgroundColor: '#1e1e1e', padding: '15px 20px', borderRadius: '8px', borderLeft: '5px solid #4cd137', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
+        <div>
+          <h4 style={{ margin: 0, color: 'white', fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '1px' }}>MONTHLY PAYOUT</h4>
+          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>Your trainer salary details</p>
+        </div>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <span style={{ backgroundColor: '#2a2a2a', border: '1px solid #444', color: 'white', padding: '8px 15px', borderRadius: '5px', fontWeight: 'bold' }}>
+             Amount: ₹{user.salaryAmount || 0}
+           </span>
+           <span style={{ backgroundColor: user.salaryStatus === 'Paid' ? 'rgba(57, 255, 20, 0.1)' : 'rgba(255, 193, 7, 0.1)', color: user.salaryStatus === 'Paid' ? 'var(--accent-color)' : '#ffc107', padding: '8px 15px', borderRadius: '5px', fontWeight: 'bold', border: `1px solid ${user.salaryStatus === 'Paid' ? 'var(--accent-color)' : '#ffc107'}` }}>
+             Status: {user.salaryStatus || 'Pending'}
+           </span>
+        </div>
       </div>
 
-      {/* 🟢 MAIN CONTENT AREA */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto 30px auto', display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+        <button className="btn-save" style={{ backgroundColor: activeTab === 'clients' ? 'var(--accent-color)' : '#2a2a2a', color: activeTab === 'clients' ? '#000' : 'white', width: 'auto', padding: '10px 20px' }} onClick={() => setActiveTab('clients')}>👥 MY CLIENTS (PT)</button>
+        <button className="btn-save" style={{ backgroundColor: activeTab === 'workouts' ? 'var(--accent-color)' : '#2a2a2a', color: activeTab === 'workouts' ? '#000' : 'white', width: 'auto', padding: '10px 20px' }} onClick={() => setActiveTab('workouts')}>📝 LOG & HISTORY</button>
+        <button className="btn-save" style={{ backgroundColor: activeTab === 'overview' ? 'var(--accent-color)' : '#2a2a2a', color: activeTab === 'overview' ? '#000' : 'white', width: 'auto', padding: '10px 20px' }} onClick={() => setActiveTab('overview')}>📊 MY PROGRESS</button>
+        <button className="btn-save" style={{ backgroundColor: activeTab === 'ai' ? 'var(--accent-color)' : '#2a2a2a', color: activeTab === 'ai' ? '#000' : 'white', width: 'auto', padding: '10px 20px' }} onClick={() => setActiveTab('ai')}>🤖 AI COACH</button>
+      </div>
+
       <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-        
-        {/* TAB 1: CLIENTS */}
         {activeTab === 'clients' && (
           <div className="gym-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ border: 'none', margin: 0 }}>Assigned PT Clients</h3>
-              <span style={{ backgroundColor: 'var(--accent-color)', color: '#000', padding: '5px 15px', borderRadius: '20px', fontWeight: 'bold' }}>
-                {clients.length} Active
-              </span>
+              <h3 style={{ border: 'none', margin: 0 }}>ASSIGNED PT CLIENTS</h3>
+              <span style={{ backgroundColor: 'var(--accent-color)', color: '#000', padding: '5px 15px', borderRadius: '20px', fontWeight: 'bold' }}>{clients.length} Active</span>
             </div>
-            
-            {clients.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px 0' }}>No clients assigned yet. Ask Admin to link users.</p>
-            ) : (
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Client Name</th>
-                    <th>Email</th>
-                    <th>Current Status</th>
-                  </tr>
-                </thead>
+            {clients.length === 0 ? <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '40px 0' }}>No clients assigned yet.</p> : (
+              <table className="table text-center">
+                <thead><tr><th>Client Name</th><th>Email</th><th>Current Status</th></tr></thead>
                 <tbody>
-                  {clients.map(client => (
-                    <tr key={client._id}>
-                      <td style={{ fontWeight: 'bold' }}>{client.name}</td>
-                      <td style={{ color: 'var(--text-muted)' }}>{client.email}</td>
+                  {clients.map(c => (
+                    <tr key={c._id}>
+                      <td style={{ fontWeight: 'bold' }}>{c.name}</td>
+                      <td style={{ color: 'var(--text-muted)' }}>{c.email}</td>
                       <td style={{ color: 'var(--accent-color)', fontWeight: 'bold' }}>In Training</td>
                     </tr>
                   ))}
@@ -216,90 +137,31 @@ export default function TrainerDashboard() {
             )}
           </div>
         )}
-
-        {/* 🟢 TAB 2: WORKOUTS LOG & HISTORY (Naya Section) */}
+        
+        {/* LOG HISTORY TAB FOR TRAINER */}
         {activeTab === 'workouts' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '30px' }}>
-            
-            {/* Form Card */}
-            <div className="gym-card">
-              <h3>Log Your Workout</h3>
-              <form onSubmit={handleLogWorkout}>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Day</label>
-                    <select className="gym-input" value={dayOfWeek} onChange={(e) => setDayOfWeek(e.target.value)}>
-                      <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
-                      <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
-                    </select>
-                  </div>
-                  <div className="form-group">
-                    <label>Exercise Name</label>
-                    <input type="text" className="gym-input" required placeholder="e.g. Bench Press" 
-                      value={exerciseName} onChange={(e) => setExerciseName(e.target.value)} />
-                  </div>
-                  <div className="form-group">
-                    <label>Duration (mins)</label>
-                    <input type="number" className="gym-input" required min="1" 
-                      value={durationInMinutes} onChange={(e) => setDurationInMinutes(e.target.value)} />
-                  </div>
-                </div>
-                <button type="submit" className="btn-save" disabled={isLogging}>
-                  {isLogging ? 'Logging...' : 'Save Workout'}
-                </button>
-              </form>
-            </div>
-
-            {/* History Table Card */}
-            <div className="gym-card">
-              <h3>Your Training History</h3>
-              {workouts.length === 0 ? (
-                <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '20px 0' }}>No workouts logged yet. Set an example for your clients!</p>
-              ) : (
-                <table className="table text-center align-middle">
-                  <thead>
-                    <tr>
-                      <th>Day</th>
-                      <th>Exercise</th>
-                      <th>Duration</th>
-                      <th>Calories</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {workouts.map((workout) => (
-                      <tr key={workout._id}>
-                        <td style={{ fontWeight: 'bold' }}>{workout.dayOfWeek}</td>
-                        <td>{workout.exerciseName}</td>
-                        <td>{workout.durationInMinutes}m</td>
-                        <td style={{ color: 'var(--accent-color)', fontWeight: 'bold' }}>{workout.caloriesBurned} kcal</td>
-                        <td>
-                          <button onClick={() => handleDeleteWorkout(workout._id)} className="btn-logout" style={{ padding: '5px 10px', fontSize: '0.8rem' }}>
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* TAB 3: CHART */}
-        {activeTab === 'overview' && (
           <div className="gym-card">
-             <h3>Personal Performance Stats</h3>
-             <WorkoutsChart data={chartData} />
+            <h3>YOUR TRAINING HISTORY</h3>
+            {workouts.length === 0 ? <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '20px 0' }}>No workouts logged yet. Put in some work!</p> : (
+              <table className="table text-center align-middle">
+                <thead><tr><th>Day</th><th>Exercise</th><th>Duration</th><th>Calories Burned</th></tr></thead>
+                <tbody>
+                  {workouts.map((w) => (
+                    <tr key={w._id}>
+                      <td style={{ fontWeight: 'bold' }}>{w.dayOfWeek}</td>
+                      <td>{w.exerciseName}</td>
+                      <td>{w.durationInMinutes}m</td>
+                      <td style={{ color: 'var(--accent-color)', fontWeight: 'bold' }}>{w.caloriesBurned} kcal</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         )}
 
-        {/* TAB 4: AI COACH */}
-        {activeTab === 'ai' && (
-           <Chatbot />
-        )}
-
+        {activeTab === 'overview' && (<div className="gym-card"><h3>PERSONAL PERFORMANCE STATS</h3><WorkoutsChart data={chartData} /></div>)}
+        {activeTab === 'ai' && (<Chatbot />)}
       </div>
     </div>
   );

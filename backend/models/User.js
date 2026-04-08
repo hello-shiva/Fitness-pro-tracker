@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
         ref: 'User',
         default: null
     },
+    specialization :{
+        type: String,
+        default: ''
+    },
 
     // 🟢 3. TRAINER SPECIFIC FIELDS
     salaryStatus: {

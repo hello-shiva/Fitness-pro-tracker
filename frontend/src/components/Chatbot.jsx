@@ -5,11 +5,13 @@ export default function Chatbot() {
   const [goal, setGoal] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiPlan, setAiPlan] = useState('');
+  const [error, setError] = useState('');
 
   const handleGenerate = async (e) => {
     e.preventDefault();
     setIsGenerating(true);
     setAiPlan('');
+    setError('');
 
     const token = localStorage.getItem('token');
 
@@ -18,7 +20,7 @@ export default function Chatbot() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // Optional: Agar protect middleware lagaya hai toh
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ goal })
       });
@@ -27,12 +29,16 @@ export default function Chatbot() {
       
       if (response.ok) {
         setAiPlan(data.plan);
+        setError('');
+      } else if (response.status === 503) {
+        setError('🔄 AI service is temporarily busy. Please try again in a moment...');
+        console.warn('Service temporarily unavailable, will retry');
       } else {
-        alert(data.message || 'Failed to generate plan');
+        setError(data.message || 'Failed to generate plan');
       }
     } catch (error) {
       console.error("Error generating plan: ", error);
-      alert("Something went wrong!");
+      setError('⚠️ Connection error. Please check your internet and try again.');
     } finally {
       setIsGenerating(false);
     }
@@ -60,7 +66,7 @@ export default function Chatbot() {
       
       <div className="card-body d-flex flex-column" style={{ overflowY: 'auto' }}>
         <p className="text-muted mb-4">
-          Tell AI your fitness goal (e.g., "Lose 5kg in 2 months", "Gain muscle for a marathon"), and get a custom 7-day diet and workout PDF!
+          Tell AI your fitness goal (e.g., "Lose 5kg in 2 months", "Gain muscle for a marathon"), and get a custom 30-day diet and workout PDF!
         </p>
 
         <form onSubmit={handleGenerate} className="mb-4">
@@ -79,12 +85,24 @@ export default function Chatbot() {
           </div>
         </form>
 
+        {error && (
+          <div className="alert alert-warning alert-dismissible fade show" role="alert">
+            {error}
+            <button 
+              type="button" 
+              className="btn-close" 
+              onClick={() => setError('')}
+            ></button>
+          </div>
+        )}
+
         {isGenerating && (
           <div className="text-center my-5">
             <div className="spinner-border text-primary mb-2" role="status"></div>
             <p className="fw-bold text-primary">AI is analyzing your goal and creating a custom plan...</p>
           </div>
         )}
+        
         {aiPlan && !isGenerating && (
           <div className="border rounded p-4 bg-light flex-grow-1 position-relative mt-3">
             <div className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">

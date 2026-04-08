@@ -72,4 +72,27 @@ const updateSpecialization = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-module.exports = {assignTrainer,updateUserRole, updateSpecialization};
+// 🟢 NAYA FUNCTION: Trainer ki salary control karne ke liye
+const updateTrainerSalary = async (req, res) => {
+    try {
+        const { userId, salaryAmount, salaryStatus } = req.body;
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({ message: 'Not authorized as an admin' });
+        }
+
+        const user = await User.findById(userId);
+        if (user && user.role === 'trainer') {
+            user.salaryAmount = salaryAmount;
+            user.salaryStatus = salaryStatus;
+            await user.save();
+            res.json({ message: "Salary updated successfully", user });
+        } else {
+            res.status(404).json({ message: "Trainer not found" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// 🟢 EXPORT MEIN UPDATE KAREIN: isme updateTrainerSalary add kar dein
+module.exports = { assignTrainer, updateUserRole, updateSpecialization, updateTrainerSalary };

@@ -63,39 +63,6 @@ const getUsers = async (req,res) =>{
         res.status(500).json({message:error.message});
     }
 };
-
-const updateFeeStatus = async (req,res) =>{
-    try{
-        if(req.user.role !== 'admin'){
-            return res.status(403).json({message:'Not authorized as an admin'});
-        }
-
-        const user = await User.findById(req.params.id);
-
-        if(user) {
-            let baseDate = new Date();
-            if(user.feeValidUntil && Date(user.feeValidUntil)> new Date()){
-                baseDate = new Date(user.feeValidUntil);
-            }
-
-            baseDate.setMonth(baseDate.getMonth() +1);
-            user.feeValidUntil = baseDate;
-            const updatedUser = await user.save();
-
-            res.json({
-                _id:updatedUser._id,
-                name:updatedUser.name,
-                feeValidUntil:updatedUser.feeValidUntil,
-                message:'Fee sucessfully extended to next month!'
-            });
-        } else{
-            res.status(404).json({message:'User not found'});
-        }
-    } catch (error){
-        res.status(500).json({message:error.message});
-    }
-};
-
 const updateUserFee = async (req, res) => {
     try {
         if (!req.user || req.user.role !== 'admin') {
@@ -143,4 +110,30 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = {registerUser ,loginUser ,getUsers , updateFeeStatus, updateUserFee,deleteUser};
+const getUserProfile = async (req,res)=>{
+    try{
+        const user = await User.findById(req.user.id).select('-password');
+        if(user){
+            res.json(user);
+        } else {
+            res.status(404).json({message:"User not found"});
+        }
+    } catch (error){
+        res.status(500).json({message:error.message});
+    }
+}
+
+const getTrainerProfile = async (req,res)=>{
+    try{
+        // 🟢 FIX: 'user' ki jagah 'trainer' define kiya hai
+        const trainer = await User.findById(req.user.id).select('-password');
+        if(trainer){
+            res.json(trainer);
+        } else {
+            res.status(404).json({message:"Trainer not found"});
+        }
+    } catch (error){
+        res.status(500).json({message:error.message});
+    }
+}
+module.exports = {registerUser ,loginUser ,getUsers , updateUserFee,deleteUser,getUserProfile,getTrainerProfile};

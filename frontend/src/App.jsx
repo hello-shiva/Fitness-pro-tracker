@@ -5,7 +5,7 @@ import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import { Toaster } from 'react-hot-toast';
 import TrainerDashboard from './pages/TrainerDashboard';
-// import './index.css';
+
 
 function App() {
   return (
