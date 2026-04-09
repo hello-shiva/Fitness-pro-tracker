@@ -9,7 +9,7 @@ A **comprehensive MERN Stack Fitness Management System** with advanced AI integr
 **FITNESS-TRACKER-PRO** is a high-performance full-stack web application that revolutionizes fitness management. It offers:
 - **Interactive graphical dashboards** for workout tracking and analytics
 - **Role-based access control** with 3 distinct user roles (User, Trainer, Admin)
-- **AI-powered coaching** using Google Gemini 2.5 Flash for real-time advice
+- **AI-powered coaching** using Google Gemma-3-27B-IT for real-time advice
 - **Custom fitness plans** generated as downloadable PDFs
 - **Admin command center** for managing users, trainers, and gym operations
 
@@ -21,7 +21,7 @@ A **comprehensive MERN Stack Fitness Management System** with advanced AI integr
   Dynamic weekly progress dashboard using **Recharts** displaying calories burned and workout duration with combined bar and line charts.
 
 * 🤖 **AI 7-Day Plan & PDF Generator**
-  Generate personalized 30-day diet & workout plans using **Google Generative AI (Gemini 2.5 Flash)**, downloadable as PDFs via `html2pdf.js`.
+  Generate personalized 7-day diet & workout plans using **Google Gemma-3-27B-IT**, downloadable as PDFs via `html2pdf.js`.
 
 * 🛡️ **Role-Based Authentication (User/Trainer/Admin)**
   3-tier access control with secure JWT-based authentication, Bcrypt password hashing, and role-specific dashboards.
@@ -57,7 +57,7 @@ A **comprehensive MERN Stack Fitness Management System** with advanced AI integr
 * **Node.js** - JavaScript runtime
 * **Express.js** (v5.2.1) - REST API framework
 * **MongoDB** (via Mongoose v9.3.3) - NoSQL database
-* **Google Generative AI** (v0.24.1) - Gemini 2.5 Flash API for AI coaching
+* **Google Generative AI** (v0.24.1) - Gemma-3-27B-IT model for AI coaching
 * **JWT** (jsonwebtoken v9.0.3) - Secure token-based authentication
 * **Bcrypt.js** (v3.0.3) - Password hashing & security
 * **CORS** (v2.8.6) - Cross-Origin Resource Sharing
@@ -103,7 +103,7 @@ frontend/
 │   └── fitness-app.png       # Logo
 ├── src/
 │   ├── components/
-│   │   ├── Chatbot.jsx       # AI 30-day plan generator with PDF export
+│   │   ├── Chatbot.jsx       # AI 7-day plan generator with PDF export
 │   │   └── WorkoutChart.jsx  # Weekly progress visualization
 │   ├── pages/
 │   │   ├── Login.jsx         # User login
@@ -175,7 +175,7 @@ npm run dev
 - ✅ Register & Login
 - ✅ Log daily workouts
 - ✅ View weekly progress charts
-- ✅ Generate AI 30-day fitness plans with PDF export
+* ✅ Generate AI 7-day fitness plans with PDF export
 - ✅ Track gym membership status
 - ✅ Assigned trainer info (if applicable)
 
@@ -228,7 +228,7 @@ npm run dev
 | Method | Endpoint        | Description              | Access | Role |
 | ------ | --------------- | ------------------------ | ------ | ---- |
 | POST   | `/`             | Chat with AI coach       | Private| User/Trainer |
-| POST   | `/generate-plan`| Generate 30-day plan PDF | Private| User/Trainer |
+| POST   | `/generate-plan`| Generate 7-day plan PDF | Private| User/Trainer |
 
 ### ⚙️ Admin Management (`/api/admin`)
 
@@ -245,7 +245,7 @@ npm run dev
 
 ### ✨ AI Capabilities
 - **AI Chat Coach:** Real-time fitness advice and guidance
-- **30-Day Plan Generation:** Custom workout & diet plans
+- **7-Day Plan Generation:** Custom workout & diet plans
 - **Calorie Estimation:** AI-powered calorie burn calculation per exercise
 - **Automatic Retry Logic:** 3 automatic retries with exponential backoff for API timeouts
 
@@ -293,7 +293,7 @@ GEMINI_API_KEY=your_gemini_api_key_from_google_ai_studio
 - Log in as user
 - Log workouts (select day, exercise, duration)
 - View weekly statistics chart
-- Generate AI 30-day plan and download PDF
+- Generate AI 7-day plan and download PDF
 
 ### 3. Test Admin Features (After creating test trainer)
 - Make a user a trainer via Admin Dashboard
@@ -314,7 +314,7 @@ GEMINI_API_KEY=your_gemini_api_key_from_google_ai_studio
 - **Frontend:** Vite provides instant HMR (Hot Module Replacement)
 - **Backend:** Nodemon auto-restarts on file changes
 - **Database:** MongoDB indexed queries for fast lookups
-- **AI:** Gemini 2.5 Flash model for optimal speed/accuracy balance
+- **AI:** Gemma-3-27B-IT model for optimal speed/accuracy balance
 - **Caching:** JWT tokens reduce database queries
 
 ---
