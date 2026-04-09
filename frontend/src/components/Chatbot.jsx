@@ -66,7 +66,7 @@ export default function Chatbot() {
       
       <div className="card-body d-flex flex-column" style={{ overflowY: 'auto' }}>
         <p className="text-muted mb-4">
-          Tell AI your fitness goal (e.g., "Lose 5kg in 2 months", "Gain muscle for a marathon"), and get a custom 30-day diet and workout PDF!
+          Tell AI your fitness goal (e.g., "Lose 5kg in 2 months", "Gain muscle for a marathon"), and get a custom 7-day diet and workout PDF!
         </p>
 
         <form onSubmit={handleGenerate} className="mb-4">
