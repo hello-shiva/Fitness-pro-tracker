@@ -32,7 +32,6 @@ export default function UserDashboard() {
     } catch (error) { console.error("Failed to fetch workouts: ", error); }
   };
 
-  // 🟢 SMART AUTO-SYNC LOGIC (Ye galti se reh gaya tha)
   useEffect(() => {
     const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
@@ -48,11 +47,10 @@ export default function UserDashboard() {
           const freshData = await res.json();
           if (res.ok) {
             localStorage.setItem('user', JSON.stringify(freshData));
-            // 🟢 MAGIC REDIRECT: Agar Admin ne Trainer bana diya hai, toh turant Trainer page par bhejo!
             if (freshData.role === 'trainer') {
                navigate('/trainer-dashboard');
             } else {
-               setUser(freshData); // Agar normal user hai, toh Fees UI update kardo
+               setUser(freshData);
             }
           }
         } catch (error) { console.error("Sync failed", error); }
@@ -77,14 +75,23 @@ export default function UserDashboard() {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ dayOfWeek, exerciseName, durationInMinutes: Number(durationInMinutes) })
       });
+      const data = await response.json();
       if (response.ok) {
         toast.success("Workout saved!");
         fetchWorkouts(token);
         fetchStats(token);
         setExerciseName('');
         setDurationInMinutes('');
+      } else {
+        toast.error(data.message || 'Failed to save workout');
+        console.error('Save error:', data);
       }
-    } catch (error) { console.error(error); } finally { setIsLogging(false); }
+    } catch (error) { 
+      toast.error('Network error: ' + error.message);
+      console.error(error); 
+    } finally { 
+      setIsLogging(false); 
+    }
   };
 
   const handleDeleteWorkout = async (id) => {
@@ -113,45 +120,45 @@ export default function UserDashboard() {
 
   return (
     <div className="gym-app-wrapper" style={{ padding: '20px' }}>
-      <header className="dashboard-header" style={{ maxWidth: '1200px', margin: '0 auto', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <img src="/fitness-app.png" alt="Gym Logo" style={{ width: '50px', height: '50px', filter: 'drop-shadow(0 0 5px var(--accent-color))' }} />
-          <h1 className="welcome-text mb-0">WELCOME BACK, {user.name.toUpperCase()}! 🏋️‍♂️</h1>
+      <header className="dashboard-header">
+        <div className="header-brand">
+          <img src="/fitness-app.png" alt="Gym Logo" className="header-logo" />
+          <h1 className="header-title">WELCOME BACK, {user.name.toUpperCase()}! 🏋️‍♂️</h1>
         </div>
         <button onClick={handleLogout} className="btn-logout">Logout</button>
       </header>
 
-      {/* MEMBERSHIP STATUS BANNER */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto 20px auto', backgroundColor: '#1e1e1e', padding: '15px 20px', borderRadius: '8px', borderLeft: '5px solid var(--accent-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+      <div className="status-banner">
         <div>
-          <h4 style={{ margin: 0, color: 'white', fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '1px' }}>MEMBERSHIP STATUS</h4>
-          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.9rem' }}>Track your gym subscription</p>
+          <h4 className="status-banner-title">MEMBERSHIP STATUS</h4>
+          <p className="status-banner-desc">Track your gym subscription</p>
         </div>
         <div>
            {user.feeValidUntil && new Date(user.feeValidUntil) > new Date() ? (
-             <span style={{ backgroundColor: 'rgba(57, 255, 20, 0.1)', color: 'var(--accent-color)', padding: '8px 15px', borderRadius: '5px', fontWeight: 'bold', border: '1px solid var(--accent-color)' }}>
+             <span className="status-badge status-badge-success">
                Valid until: {new Date(user.feeValidUntil).toLocaleDateString()}
              </span>
            ) : (
-             <span style={{ backgroundColor: 'rgba(255, 77, 77, 0.1)', color: '#ff4d4d', padding: '8px 15px', borderRadius: '5px', fontWeight: 'bold', border: '1px solid #ff4d4d' }}>
+             <span className="status-badge status-badge-danger">
                Payment Pending / Expired
              </span>
            )}
         </div>
       </div>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto 30px auto', display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
-        <button className="btn-save" style={{ backgroundColor: activeTab === 'logWorkout' ? 'var(--accent-color)' : '#2a2a2a', color: activeTab === 'logWorkout' ? '#000' : 'white', width: 'auto', padding: '10px 20px' }} onClick={() => setActiveTab('logWorkout')}>📝 LOG & HISTORY</button>
-        <button className="btn-save" style={{ backgroundColor: activeTab === 'progress' ? 'var(--accent-color)' : '#2a2a2a', color: activeTab === 'progress' ? '#000' : 'white', width: 'auto', padding: '10px 20px' }} onClick={() => setActiveTab('progress')}>📊 MY PROGRESS</button>
-        <button className="btn-save" style={{ backgroundColor: activeTab === 'ai' ? 'var(--accent-color)' : '#2a2a2a', color: activeTab === 'ai' ? '#000' : 'white', width: 'auto', padding: '10px 20px' }} onClick={() => setActiveTab('ai')}>🤖 AI FITNESS COACH</button>
+      <div className="tab-nav">
+        <button className={`tab-btn ${activeTab === 'logWorkout' ? 'tab-btn-active' : 'tab-btn-inactive'}`} onClick={() => setActiveTab('logWorkout')}>📝 LOG & HISTORY</button>
+        <button className={`tab-btn ${activeTab === 'progress' ? 'tab-btn-active' : 'tab-btn-inactive'}`} onClick={() => setActiveTab('progress')}>📊 MY PROGRESS</button>
+        <button className={`tab-btn ${activeTab === 'ai' ? 'tab-btn-active' : 'tab-btn-inactive'}`} onClick={() => setActiveTab('ai')}>🤖 AI FITNESS COACH</button>
       </div>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+      <div className="content-grid">
         {activeTab === 'logWorkout' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '30px' }}>
+          <>
             <div className="gym-card">
               <h3>LOG YOUR WORKOUT</h3>
               <form onSubmit={handleLogWorkout}>
+                {/* 🟢 SIDE BY SIDE FORM GRID */}
                 <div className="form-row">
                   <div className="form-group">
                     <label>Day</label>
@@ -169,9 +176,12 @@ export default function UserDashboard() {
                     <input type="number" className="gym-input" required min="1" value={durationInMinutes} onChange={(e) => setDurationInMinutes(e.target.value)} />
                   </div>
                 </div>
-                <button type="submit" className="btn-save" disabled={isLogging}>{isLogging ? 'Logging...' : 'SAVE WORKOUT'}</button>
+                <button type="submit" className="btn-save" disabled={isLogging} style={{ width: '100%', marginTop: '10px' }}>
+                  {isLogging ? 'Logging...' : 'SAVE WORKOUT'}
+                </button>
               </form>
             </div>
+            
             <div className="gym-card">
               <h3>YOUR TRAINING HISTORY</h3>
               {workouts.length === 0 ? <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '20px 0' }}>No workouts logged yet. Put in some work!</p> : (
@@ -183,7 +193,8 @@ export default function UserDashboard() {
                         <td style={{ fontWeight: 'bold' }}>{w.dayOfWeek}</td>
                         <td>{w.exerciseName}</td>
                         <td>{w.durationInMinutes}m</td>
-                        <td style={{ color: 'var(--accent-color)', fontWeight: 'bold' }}>{w.caloriesBurned} kcal</td>
+                        {/* 🟢 RED NEON CALORIES CLASS */}
+                        <td className="text-calories">{w.caloriesBurned} kcal</td>
                         <td><button onClick={() => handleDeleteWorkout(w._id)} className="btn-logout" style={{ padding: '5px 10px', fontSize: '0.8rem' }}>Delete</button></td>
                       </tr>
                     ))}
@@ -191,7 +202,7 @@ export default function UserDashboard() {
                 </table>
               )}
             </div>
-          </div>
+          </>
         )}
         {activeTab === 'progress' && (<div className="gym-card"><h3>MY WEEKLY PERFORMANCE STATS</h3><WorkoutsChart data={chartData} /></div>)}
         {activeTab === 'ai' && (<Chatbot />)}

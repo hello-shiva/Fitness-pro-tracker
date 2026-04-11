@@ -4,8 +4,8 @@ const{createWorkout, getUserWorkouts,deleteWorkout,getWorkoutStats,getMyClients}
 const {protect} =require('../middleware/authMiddleware');
 
 router.post('/',protect,createWorkout);
-router.get('/',protect,getUserWorkouts);
-router.delete('/:id',protect,deleteWorkout);
 router.get('/stats',protect,getWorkoutStats);
 router.get('/my-clients',protect,getMyClients);
+router.get('/',protect,getUserWorkouts);
+router.delete('/:id',protect,deleteWorkout);
 module.exports =router;

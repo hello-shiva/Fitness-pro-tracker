@@ -1,17 +1,12 @@
-# 🏋️‍♂️ FITNESS-TRACKER-PRO
+# 🏋️‍♂️ FITNESS TRACKER PRO
 
-A **comprehensive MERN Stack Fitness Management System** with advanced AI integration. Designed to help users track workouts, visualize progress, generate personalized 30-day fitness plans, and manage gym operations seamlessly.
+> **A Professional MERN Stack Fitness Management System with AI Integration**
 
----
+A comprehensive full-stack web application designed for modern gym management and personal fitness tracking. Features role-based access control, AI-powered coaching, real-time progress analytics, and complete gym operations management.
 
-## 🌟 Overview
-
-**FITNESS-TRACKER-PRO** is a high-performance full-stack web application that revolutionizes fitness management. It offers:
-- **Interactive graphical dashboards** for workout tracking and analytics
-- **Role-based access control** with 3 distinct user roles (User, Trainer, Admin)
-- **AI-powered coaching** using Google Gemma-3-27B-IT for real-time advice
-- **Custom fitness plans** generated as downloadable PDFs
-- **Admin command center** for managing users, trainers, and gym operations
+![Built with](https://img.shields.io/badge/Built%20with-MERN%20Stack-61dafb?style=flat-square)
+![Node Version](https://img.shields.io/badge/Node-v16%2B-339933?style=flat-square)
+![License](https://img.shields.io/badge/License-ISC-green?style=flat-square)
 
 ---
 
@@ -51,6 +46,7 @@ A **comprehensive MERN Stack Fitness Management System** with advanced AI integr
 * **Recharts** (v3.8.1) - Interactive charts & graphs
 * **html2pdf.js** (v0.14.0) - PDF generation from HTML
 * **React Hot Toast** (v2.6.0) - Toast notifications
+* **@react-oauth/google** - Google OAuth 2.0 authentication
 
 ### Backend
 
@@ -58,6 +54,9 @@ A **comprehensive MERN Stack Fitness Management System** with advanced AI integr
 * **Express.js** (v5.2.1) - REST API framework
 * **MongoDB** (via Mongoose v9.3.3) - NoSQL database
 * **Google Generative AI** (v0.24.1) - Gemma-3-27B-IT model for AI coaching
+* **Passport.js** - Authentication middleware
+* **passport-google-oauth20** - Google OAuth strategy
+* **express-session** - Session management
 * **JWT** (jsonwebtoken v9.0.3) - Secure token-based authentication
 * **Bcrypt.js** (v3.0.3) - Password hashing & security
 * **CORS** (v2.8.6) - Cross-Origin Resource Sharing
@@ -73,26 +72,29 @@ A **comprehensive MERN Stack Fitness Management System** with advanced AI integr
 ```
 backend/
 ├── config/
-│   └── db.js                 # MongoDB connection
+│   ├── db.js                 # MongoDB connection
+│   └── passport.js           # Google OAuth strategy configuration
 ├── controllers/
 │   ├── adminController.js    # Admin operations (roles, trainer assignment, salary)
 │   ├── aiController.js       # AI coaching & plan generation
 │   ├── authController.js     # User registration & login
+│   ├── oauthController.js    # Google OAuth handler
 │   └── workoutController.js  # Workout CRUD & statistics
 ├── middleware/
 │   └── authMiddleware.js     # JWT verification & role-based access
 ├── models/
-│   ├── User.js               # User schema (User/Trainer/Admin roles)
+│   ├── User.js               # User schema (User/Trainer/Admin roles, OAuth fields)
 │   └── Workout.js            # Workout schema
 ├── routes/
 │   ├── adminRoutes.js        # Admin endpoints
 │   ├── aiRoutes.js           # AI endpoints
 │   ├── userRoutes.js         # Authentication & user endpoints
-│   └── workoutRoutes.js      # Workout endpoints
+│   ├── workoutRoutes.js      # Workout endpoints
+│   └── oauthRoutes.js        # Google OAuth endpoints
 ├── services/
 │   └── aiService.js          # AI-powered calorie estimation
 ├── server.js                 # Express app initialization
-└── .env                      # Environment variables
+└── .env                      # Environment variables (DO NOT COMMIT)
 ```
 
 ### 🎨 Frontend
@@ -142,10 +144,42 @@ Create `.env` file in the `backend` directory:
 
 ```env
 PORT=5000
-MONGO_URL=mongodb://localhost:27017/fitness-tracker-db
+MONGO_URL=your_mongodb_connection_string
 JWT_SECRET=your_super_secret_jwt_key_change_this
 GEMINI_API_KEY=your_google_gemini_api_key
+GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+SESSION_SECRET=your_session_secret_key_change_this
 ```
+
+### 🔐 Google OAuth Setup (Optional but Recommended)
+
+To enable Google Sign-In/Sign-Up:
+
+1. **Get Google OAuth Credentials:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project
+   - Enable "Google+ API"
+   - Create OAuth 2.0 credentials (Web application type)
+
+2. **Configure Redirect URIs:**
+   In Google Cloud Console, add these redirect URIs:
+   - `http://localhost:5000/api/oauth/google/callback` (development)
+   - `http://localhost:5173/login` (frontend)
+   - Your production URLs (when deploying)
+
+3. **Add to .env:**
+   ```env
+   GOOGLE_CLIENT_ID=your_client_id_from_google_console
+   GOOGLE_CLIENT_SECRET=your_client_secret_from_google_console
+   ```
+
+4. **Add to frontend/.env:**
+   ```env
+   VITE_GOOGLE_CLIENT_ID=your_client_id_from_google_console
+   ```
+
+**Without Google OAuth:** The app works fine with email/password authentication. OAuth is optional.
 
 Start the backend server:
 
@@ -162,12 +196,33 @@ npm run dev
 ```bash
 cd frontend
 npm install
+```
+
+Create `.env` file in the `frontend` directory:
+
+```env
+VITE_GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
+```
+
+Then start the frontend:
+
+```bash
 npm run dev
 ```
 
 🌐 Frontend runs on: **http://localhost:5173**
 
 ---
+
+## ⚠️ Important - Environment Variables
+
+**NEVER** commit your `.env` files to GitHub! They contain sensitive credentials.
+
+- ✅ Copy from `.env.example` files in both `backend/` and `frontend/` directories
+- ✅ Add your actual credentials locally
+- ✅ `.env` files are already in `.gitignore`
+
+The `.env` files are **already ignored** by Git, but make sure you never commit them accidentally.
 
 ## 🎯 User Roles & Features
 

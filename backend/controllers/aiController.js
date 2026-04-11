@@ -4,8 +4,6 @@ const generateChatResponse = async (req, res) => {
     try {
         const { prompt } = req.body;
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        
-        // 🟢 FIX: Sabse stable aur high-quota model
         const model = genAI.getGenerativeModel({ model: 'gemma-3-27b-it' });
 
         const systemPrompt = "You are a professional, motivating AI Fitness Coach. Answer the user's questions about workouts, diet, and gym routines concisely and enthusiastically. Keep answers under 3 paragraphs.";
@@ -15,7 +13,6 @@ const generateChatResponse = async (req, res) => {
 
         res.status(200).json({ reply: response.response.text() });
     } catch (error) {
-        console.error('AI Chat Error:', error);
         res.status(500).json({ message: `Backend Error: ${error.message}` });
     }
 };
@@ -28,8 +25,6 @@ const generateFitnessPlan = async (req, res) => {
         }
 
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        
-        // 🟢 FIX: Sabse stable aur high-quota model
         const model = genAI.getGenerativeModel({ model: 'gemma-3-27b-it' });
 
         const prompt = `Act as an expert fitness coach. Create a 7-day workout and diet plan for someone whose goal is: "${goal}". 
@@ -41,8 +36,6 @@ const generateFitnessPlan = async (req, res) => {
 
         res.status(200).json({ plan: response.response.text() });
     } catch (error) {
-        console.error('AI Plan Error:', error);
-        
         if (error.status === 503) {
             return res.status(503).json({ 
                 message: 'AI servers are currently busy. Please wait 10 seconds and try again.',

@@ -11,7 +11,6 @@ const retryWithBackoff = async (fn, maxRetries = 3, baseDelay = 1000) => {
 
             if (status === 503 && !isLastAttempt) {
                 const delay = baseDelay * Math.pow(2, attempt);
-                console.log(`Calorie API temporarily unavailable. Retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`);
                 await new Promise(resolve => setTimeout(resolve, delay));
             } else {
                 throw error;
@@ -24,7 +23,6 @@ const estimateCaloriesAI = async (exerciseName, durationInMinutes) => {
     try {
         const result = await retryWithBackoff(async () => {
             const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-            // 🟢 FIX: Yahan bhi 'gemini-pro' laga diya hai
             const model = genAI.getGenerativeModel({ model: 'gemma-3-27b-it' });
 
             const prompt = `You are a fitness API. A user performed the Exercise"${exerciseName}" for ${durationInMinutes} minutes. Estimate the total calories burned. Respond with ONLY a valid JSON object in this exact format :{"calories": 300}. Do not include markdown, code blocks, or any other text.`;
@@ -36,8 +34,6 @@ const estimateCaloriesAI = async (exerciseName, durationInMinutes) => {
         const parsed = JSON.parse(result);
         return parsed.calories;
     } catch (error) {
-        console.error('AI calculation Error:', error.message);
-        // Fallback: estimate calories as 5 per minute
         return durationInMinutes * 5;
     }
 };

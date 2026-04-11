@@ -86,7 +86,6 @@ const updateUserFee = async (req, res) => {
             res.status(404).json({ message: 'User not found' });
         }
     } catch (error) {
-        console.error("Fee Update Error: ", error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -112,6 +111,7 @@ const deleteUser = async (req, res) => {
 
 const getUserProfile = async (req,res)=>{
     try{
+        // 🟢 FIX: req.user.id
         const user = await User.findById(req.user.id).select('-password');
         if(user){
             res.json(user);
@@ -125,7 +125,7 @@ const getUserProfile = async (req,res)=>{
 
 const getTrainerProfile = async (req,res)=>{
     try{
-        // 🟢 FIX: 'user' ki jagah 'trainer' define kiya hai
+        // 🟢 FIX: req.user.id
         const trainer = await User.findById(req.user.id).select('-password');
         if(trainer){
             res.json(trainer);
@@ -136,4 +136,5 @@ const getTrainerProfile = async (req,res)=>{
         res.status(500).json({message:error.message});
     }
 }
+
 module.exports = {registerUser ,loginUser ,getUsers , updateUserFee,deleteUser,getUserProfile,getTrainerProfile};

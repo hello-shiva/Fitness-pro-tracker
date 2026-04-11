@@ -8,7 +8,6 @@ const assignTrainer = async (req, res) => {
             return res.status(403).json({ message: 'Not authorized as an admin' });
         }
 
-        // 🟢 FIX: Trainer ko pehle dhoondo taaki uska naam use kar sako
         let trainerName = "No Trainer";
         if (trainerId) {
             const trainer = await User.findById(trainerId);
@@ -53,7 +52,6 @@ const updateUserRole = async (req,res) =>{
             res.status(404).json({message: error.message});
         }
     } catch(error){
-        console.error(" Update User Role Error: ",error);
         res.status(500).json({message: error.message});
     }
 };
@@ -72,7 +70,6 @@ const updateSpecialization = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-// 🟢 NAYA FUNCTION: Trainer ki salary control karne ke liye
 const updateTrainerSalary = async (req, res) => {
     try {
         const { userId, salaryAmount, salaryStatus } = req.body;
@@ -94,5 +91,4 @@ const updateTrainerSalary = async (req, res) => {
     }
 };
 
-// 🟢 EXPORT MEIN UPDATE KAREIN: isme updateTrainerSalary add kar dein
 module.exports = { assignTrainer, updateUserRole, updateSpecialization, updateTrainerSalary };

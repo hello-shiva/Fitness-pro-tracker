@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -44,20 +45,73 @@ export default function Login() {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/oauth/verify-google-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tokenId: credentialResponse.credential,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Google login failed');
+      }
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data));
+      
+      if (data.role === 'admin') {
+        navigate('/admin');
+      } else if (data.role === 'trainer') {
+        navigate('/trainer-dashboard');
+      } else {
+        navigate('/dashboard'); 
+      }
+    } catch (err) {
+      setError(err.message || 'Google login failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError('Google login failed. Please try again.');
+  };
+
   return (
-    <div className="gym-app-wrapper" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div className="gym-card" style={{ maxWidth: '400px', width: '100%', textAlign: 'center' }}>
+    <div className="auth-container">
+      <div className="gym-card auth-card">
+        <img src="/fitness-app.png" alt="Fitness Pro Logo" className="app-logo" />
         
-        {/* 🟢 Naya Logo Yahan Add Kiya Hai */}
-        <img src="/fitness-app.png" alt="Fitness Pro Logo" style={{ width: '80px', marginBottom: '15px', filter: 'drop-shadow(0 0 10px var(--accent-color))' }} />
+        <h2 className="auth-title">FITNESS PRO LOGIN</h2>
         
-        <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", letterSpacing: '2px', color: 'white', marginBottom: '25px' }}>FITNESS PRO LOGIN</h2>
+        {error && <div className="error-box">{error}</div>}
         
-        {error && <div style={{ backgroundColor: 'rgba(255, 77, 77, 0.1)', color: '#ff4d4d', padding: '10px', borderRadius: '5px', marginBottom: '15px', fontWeight: 'bold' }}>{error}</div>}
+        <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'center' }}>
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            text="signin_with"
+            size="large"
+          />
+        </div>
+
+        <div className="divider">
+          <div className="divider-line"></div>
+          <span className="divider-text">OR</span>
+          <div className="divider-line"></div>
+        </div>
 
         <form onSubmit={handleLogin}>
-          <div style={{ textAlign: 'left', marginBottom: '15px' }}>
-            <label style={{ color: 'var(--text-muted)', fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>Email Address</label>
+          <div className="form-group">
+            <label>Email Address</label>
             <input
               type="email"
               className="gym-input"
@@ -66,8 +120,8 @@ export default function Login() {
               required
             />
           </div>
-          <div style={{ textAlign: 'left', marginBottom: '25px' }}>
-            <label style={{ color: 'var(--text-muted)', fontWeight: 'bold', marginBottom: '5px', display: 'block' }}>Password</label>
+          <div className="form-group">
+            <label>Password</label>
             <input
               type="password"
               className="gym-input"
@@ -76,13 +130,13 @@ export default function Login() {
               required
             />
           </div>
-          <button type="submit" className="btn-save" style={{ width: '100%' }} disabled={isLoading}>
+          <button type="submit" className="btn-save" disabled={isLoading}>
             {isLoading ? 'AUTHENTICATING...' : 'LOG IN'}
           </button>
         </form>
         
-        <div style={{ marginTop: '20px', color: 'var(--text-muted)' }}>
-          New user? <Link to="/register" style={{ color: 'var(--accent-color)', textDecoration: 'none', fontWeight: 'bold' }}>Create an account</Link>
+        <div className="auth-link">
+          New user? <Link to="/register">Create an account</Link>
         </div>
       </div>
     </div>
