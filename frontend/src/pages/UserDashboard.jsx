@@ -158,7 +158,7 @@ export default function UserDashboard() {
             <div className="gym-card">
               <h3>LOG YOUR WORKOUT</h3>
               <form onSubmit={handleLogWorkout}>
-                {/* 🟢 SIDE BY SIDE FORM GRID */}
+                {/* SIDE BY SIDE FORM GRID */}
                 <div className="form-row">
                   <div className="form-group">
                     <label>Day</label>
@@ -193,7 +193,7 @@ export default function UserDashboard() {
                         <td style={{ fontWeight: 'bold' }}>{w.dayOfWeek}</td>
                         <td>{w.exerciseName}</td>
                         <td>{w.durationInMinutes}m</td>
-                        {/* 🟢 RED NEON CALORIES CLASS */}
+                        {/*  RED NEON CALORIES CLASS */}
                         <td className="text-calories">{w.caloriesBurned} kcal</td>
                         <td><button onClick={() => handleDeleteWorkout(w._id)} className="btn-logout" style={{ padding: '5px 10px', fontSize: '0.8rem' }}>Delete</button></td>
                       </tr>

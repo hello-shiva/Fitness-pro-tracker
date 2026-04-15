@@ -111,7 +111,6 @@ const deleteUser = async (req, res) => {
 
 const getUserProfile = async (req,res)=>{
     try{
-        // 🟢 FIX: req.user.id
         const user = await User.findById(req.user.id).select('-password');
         if(user){
             res.json(user);
@@ -125,7 +124,6 @@ const getUserProfile = async (req,res)=>{
 
 const getTrainerProfile = async (req,res)=>{
     try{
-        // 🟢 FIX: req.user.id
         const trainer = await User.findById(req.user.id).select('-password');
         if(trainer){
             res.json(trainer);

@@ -11,8 +11,6 @@ export default function TrainerDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [chartData, setChartData] = useState([]);
   const [activeTab, setActiveTab] = useState('clients'); 
-  
-  // 🟢 Ye States miss ho gaye the
   const [workouts, setWorkouts] = useState([]);
   const [dayOfWeek, setDayOfWeek] = useState('Monday');
   const [exerciseName, setExerciseName] = useState('');
@@ -42,8 +40,6 @@ export default function TrainerDashboard() {
       if (res.ok) setWorkouts(data);
     } catch (error) { console.error(error); }
   };
-
-  // 🟢 Naya Workout Save Karne ka Function
   const handleLogWorkout = async (e) => {
     e.preventDefault();
     setIsLogging(true);

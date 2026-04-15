@@ -8,7 +8,6 @@ const createWorkout = async(req, res) => {
         
         const calculatedCalories = await estimateCaloriesAI(exerciseName, durationInMinutes);
 
-        // 🟢 FIX: req.user.id use kiya hai taaki sahi user ke naam pe save ho
         const workout = await Workout.create({
             user: req.user.id, 
             dayOfWeek,
@@ -26,7 +25,6 @@ const createWorkout = async(req, res) => {
 
 const getUserWorkouts = async(req, res) => {
     try {
-        // 🟢 FIX: req.user.id
         const workouts = await Workout.find({ user: req.user.id });
         res.json(workouts);
     } catch(error) {
@@ -42,7 +40,6 @@ const deleteWorkout = async(req, res) => {
             return res.status(404).json({message: 'Workout not found'});
         }
         
-        // 🟢 FIX: req.user.id
         if(workout.user.toString() !== req.user.id.toString()) {
             return res.status(401).json({message:'Not authorized to delete this workout'});
         }
@@ -56,7 +53,6 @@ const deleteWorkout = async(req, res) => {
 
 const getWorkoutStats = async (req, res) => {
     try {
-        // 🟢 FIX: req.user.id
         const workouts = await Workout.find({ user: req.user.id });
         const weekStats = {
             Monday: { day: 'Mon', caloriesBurned: 0, duration: 0 },
@@ -83,7 +79,6 @@ const getWorkoutStats = async (req, res) => {
 
 const getMyClients = async (req, res) => {
     try {
-        // 🟢 FIX: req.user.id
         const clients = await User.find({ assignedTrainer: req.user.id }).select('-password');
         res.json(clients);
     } catch (error) {

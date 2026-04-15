@@ -1,7 +1,7 @@
 const express = require('express');
 const passport = require('passport');
 const router = express.Router();
-const { googleAuth, verifyGoogleToken } = require('../controllers/oauthController');
+const { verifyGoogleToken } = require('../controllers/oauthController');
 
 router.get('/google',
     passport.authenticate('google', { 

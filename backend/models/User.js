@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
             return !this.googleId;
         }
     },
-    // 🟢 GOOGLE OAUTH FIELDS
+    // GOOGLE OAUTH FIELDS
     googleId: {
         type: String,
         unique: true,
@@ -34,19 +34,19 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: null
     },
-    // 🟢 1. ROLES SYSTEM
+    //  1. ROLES SYSTEM
     role: {
         type: String,
         enum: ['user', 'trainer', 'admin'],
         default: 'user'
     },
     
-    // 🟢 2. USER SPECIFIC FIELDS
+    //  2. USER SPECIFIC FIELDS
     feeValidUntil: {
         type: Date,
         default: null
     },
-    // Yeh user kisi Trainer se link hoga (Self-Referencing)
+    // here user link with Trainer
     assignedTrainer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -57,7 +57,7 @@ const userSchema = new mongoose.Schema({
         default: ''
     },
 
-    // 🟢 3. TRAINER SPECIFIC FIELDS
+    //  3. TRAINER SPECIFIC FIELDS
     salaryStatus: {
         type: String,
         enum: ['Paid', 'Pending'],
